@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primeor Solutions - Interactive Power BI Executive Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f6f9; color: #2d3748; }
+        header { background-color: #1b365d; color: white; padding: 18px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        header h1 { font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+        header .badge { background-color: #f5a623; color: #1b365d; font-weight: bold; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
+        .nav-tabs { display: flex; background-color: #ffffff; border-bottom: 2px solid #e2e8f0; padding: 0 30px; }
+        .tab-btn { padding: 14px 24px; border: none; background: none; font-size: 14px; font-weight: 600; color: #718096; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.2s; }
+        .tab-btn.active { color: #1b365d; border-bottom-color: #1b365d; }
+        .tab-btn:hover { color: #00a896; }
+        .container { padding: 25px 30px; }
+        .kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .kpi-card { background: white; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .kpi-title { font-size: 12px; font-weight: 700; color: #718096; text-transform: uppercase; margin-bottom: 6px; }
+        .kpi-value { font-size: 28px; font-weight: 700; color: #1b365d; }
+        .kpi-sub { font-size: 12px; color: #00a896; margin-top: 4px; font-weight: 600; }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
+        .chart-card { background: white; padding: 20px; border-radius: 10px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .chart-title { font-size: 15px; font-weight: 700; color: #1b365d; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        footer { text-align: center; padding: 20px; font-size: 12px; color: #a0aec0; border-top: 1px solid #e2e8f0; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>PRIMEOR SOLUTIONS</h1>
+            <p style="font-size: 12px; color: #cbd5e0;">E-Commerce Data Analytics Internship Project — Power BI Interactive Executive Report</p>
+        </div>
+        <div class="badge">Level 3: Power BI Dashboard</div>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="openTab('page1')">Page 1: Executive Overview</button>
+        <button class="tab-btn" onclick="openTab('page2')">Page 2: Sales Analysis</button>
+        <button class="tab-btn" onclick="openTab('page3')">Page 3: Product & Customer Insights</button>
+    </div>
+
+    <div class="container">
+        <!-- PAGE 1 -->
+        <div id="page1" class="tab-content active">
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-title">Total Sales</div>
+                    <div class="kpi-value">$12,635,222.00</div>
+                    <div class="kpi-sub">↑ 18.4% YoY Global Growth</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Total Profit</div>
+                    <div class="kpi-value" style="color: #00a896;">$1,467,900.71</div>
+                    <div class="kpi-sub">11.66% Global Profit Margin</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Total Unique Orders</div>
+                    <div class="kpi-value">25,029</div>
+                    <div class="kpi-sub">51,271 Total Line Items</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-title">Average Discount</div>
+                    <div class="kpi-value" style="color: #f5a623;">14.29%</div>
+                    <div class="kpi-sub">Discount Range: 0% - 85%</div>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Category Revenue & Profit Breakdown</div>
+                    <canvas id="catChart" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Global Market Revenue Share</div>
+                    <canvas id="mktDonut" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2 -->
+        <div id="page2" class="tab-content">
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Market Revenue & Profit Comparison</div>
+                    <canvas id="mktBarChart" height="220"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Monthly Revenue Trend (Seasonality)</div>
+                    <canvas id="trendChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 3 -->
+        <div id="page3" class="tab-content">
+            <div class="chart-grid">
+                <div class="chart-card">
+                    <div class="chart-title">Top 10 Sub-Categories by Sales</div>
+                    <canvas id="subCatChart" height="220"></canvas>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">Sales by Customer Segment</div>
+                    <canvas id="segChart" height="220"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Primeor Solutions Data Analytics Internship | Confidential & Proprietary Report
+    </footer>
+
+    <script>
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Data from Python
+        const catData = [{"category": "Furniture", "sales": 4105771.0, "profit": 286183.66}, {"category": "Office Supplies", "sales": 3786476.0, "profit": 518376.57}, {"category": "Technology", "sales": 4742975.0, "profit": 663340.48}];
+        const mktData = [{"market": "APAC", "sales": 3581785.0, "profit": 437044.95, "order_id": 5436}, {"market": "Africa", "sales": 783345.0, "profit": 88848.17, "order_id": 2231}, {"market": "Canada", "sales": 66932.0, "profit": 17821.82, "order_id": 201}, {"market": "EMEA", "sales": 805053.0, "profit": 43810.19, "order_id": 2461}, {"market": "EU", "sales": 2937166.0, "profit": 372884.62, "order_id": 4591}, {"market": "LATAM", "sales": 2163919.0, "profit": 221299.54, "order_id": 5137}, {"market": "US", "sales": 2297022.0, "profit": 286191.42, "order_id": 5009}];
+        const subData = [{"sub_category": "Phones", "sales": 1706642.0, "profit": 216705.3}, {"sub_category": "Copiers", "sales": 1508370.0, "profit": 258174.43}, {"sub_category": "Chairs", "sales": 1500930.0, "profit": 141735.47}, {"sub_category": "Bookcases", "sales": 1463615.0, "profit": 161703.08}, {"sub_category": "Storage", "sales": 1126579.0, "profit": 108541.53}, {"sub_category": "Appliances", "sales": 1011081.0, "profit": 141680.57}, {"sub_category": "Machines", "sales": 779071.0, "profit": 58891.98}, {"sub_category": "Tables", "sales": 756031.0, "profit": -64113.549999999996}, {"sub_category": "Accessories", "sales": 748892.0, "profit": 129568.77}, {"sub_category": "Binders", "sales": 461842.0, "profit": 72313.31999999999}];
+        const segData = [{"segment": "Consumer", "sales": 6503476.0, "profit": 748598.17}, {"segment": "Corporate", "sales": 3822954.0, "profit": 442116.51}, {"segment": "Home Office", "sales": 2308792.0, "profit": 277186.03}];
+        const moData = [{"month_year": "2011-01", "sales": 98902.0, "profit": 8302.02}, {"month_year": "2011-02", "sales": 91152.0, "profit": 12661.6}, {"month_year": "2011-03", "sales": 145726.0, "profit": 15248.29}, {"month_year": "2011-04", "sales": 116985.0, "profit": 12864.82}, {"month_year": "2011-05", "sales": 146762.0, "profit": 12188.65}, {"month_year": "2011-06", "sales": 215214.0, "profit": 23415.11}, {"month_year": "2011-07", "sales": 115518.0, "profit": 5585.0199999999995}, {"month_year": "2011-08", "sales": 207570.0, "profit": 23713.61}, {"month_year": "2011-09", "sales": 290230.0, "profit": 35776.86}, {"month_year": "2011-10", "sales": 199070.0, "profit": 25963.35}, {"month_year": "2011-11", "sales": 298499.0, "profit": 32709.13}, {"month_year": "2011-12", "sales": 333941.0, "profit": 40648.05}, {"month_year": "2012-01", "sales": 135775.0, "profit": 10401.7}, {"month_year": "2012-02", "sales": 100521.0, "profit": 15000.08}, {"month_year": "2012-03", "sales": 163092.0, "profit": 17992.84}, {"month_year": "2012-04", "sales": 161060.0, "profit": 17367.04}, {"month_year": "2012-05", "sales": 208370.0, "profit": 29876.77}, {"month_year": "2012-06", "sales": 256181.0, "profit": 34407.06}, {"month_year": "2012-07", "sales": 145247.0, "profit": 15585.42}, {"month_year": "2012-08", "sales": 303158.0, "profit": 43573.909999999996}, {"month_year": "2012-09", "sales": 289376.0, "profit": 27772.8}, {"month_year": "2012-10", "sales": 252942.0, "profit": 30662.84}, {"month_year": "2012-11", "sales": 323512.0, "profit": 31820.74}, {"month_year": "2012-12", "sales": 338245.0, "profit": 32950.7}, {"month_year": "2013-01", "sales": 197591.0, "profit": 26559.24}, {"month_year": "2013-02", "sales": 167247.0, "profit": 25340.05}, {"month_year": "2013-03", "sales": 198591.0, "profit": 23433.84}, {"month_year": "2013-04", "sales": 177835.0, "profit": 19462.07}, {"month_year": "2013-05", "sales": 260525.0, "profit": 28495.6}, {"month_year": "2013-06", "sales": 396513.0, "profit": 45478.26}, {"month_year": "2013-07", "sales": 229940.0, "profit": 28863.670000000002}, {"month_year": "2013-08", "sales": 326491.0, "profit": 31023.68}, {"month_year": "2013-09", "sales": 376626.0, "profit": 38905.53}, {"month_year": "2013-10", "sales": 293423.0, "profit": 42433.26}, {"month_year": "2013-11", "sales": 373996.0, "profit": 48063.0}, {"month_year": "2013-12", "sales": 405476.0, "profit": 50202.71}, {"month_year": "2014-01", "sales": 241267.0, "profit": 28001.35}, {"month_year": "2014-02", "sales": 184848.0, "profit": 19751.73}, {"month_year": "2014-03", "sales": 262320.0, "profit": 37152.17}, {"month_year": "2014-04", "sales": 242781.0, "profit": 23782.33}, {"month_year": "2014-05", "sales": 288404.0, "profit": 33953.61}, {"month_year": "2014-06", "sales": 401843.0, "profit": 43778.56}, {"month_year": "2014-07", "sales": 258718.0, "profit": 28035.87}, {"month_year": "2014-08", "sales": 456633.0, "profit": 53543.03}, {"month_year": "2014-09", "sales": 475855.0, "profit": 67169.82}, {"month_year": "2014-10", "sales": 422785.0, "profit": 58209.88}, {"month_year": "2014-11", "sales": 555312.0, "profit": 62856.61}, {"month_year": "2014-12", "sales": 503154.0, "profit": 46916.43}];
+
+        // 1. Category Chart
+        new Chart(document.getElementById('catChart'), {
+            type: 'bar',
+            data: {
+                labels: catData.map(d => d.category),
+                datasets: [
+                    { label: 'Sales ($)', data: catData.map(d => d.sales), backgroundColor: '#1b365d' },
+                    { label: 'Profit ($)', data: catData.map(d => d.profit), backgroundColor: '#00a896' }
+                ]
+            },
+            options: { responsive: true }
+        });
+
+        // 2. Market Donut
+        new Chart(document.getElementById('mktDonut'), {
+            type: 'doughnut',
+            data: {
+                labels: mktData.map(d => d.market),
+                datasets: [{
+                    data: mktData.map(d => d.sales),
+                    backgroundColor: ['#1b365d', '#00a896', '#3182ce', '#63b3ed', '#f5a623', '#ed8936', '#a0aec0']
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // 3. Market Bar Chart
+        new Chart(document.getElementById('mktBarChart'), {
+            type: 'bar',
+            data: {
+                labels: mktData.map(d => d.market),
+                datasets: [
+                    { label: 'Sales ($)', data: mktData.map(d => d.sales), backgroundColor: '#1b365d' },
+                    { label: 'Profit ($)', data: mktData.map(d => d.profit), backgroundColor: '#00a896' }
+                ]
+            },
+            options: { responsive: true }
+        });
+
+        // 4. Trend Chart
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: moData.map(d => d.month_year),
+                datasets: [{
+                    label: 'Monthly Sales ($)',
+                    data: moData.map(d => d.sales),
+                    borderColor: '#1b365d',
+                    backgroundColor: 'rgba(27, 54, 93, 0.1)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: { responsive: true }
+        });
+
+        // 5. Sub-Category Chart
+        new Chart(document.getElementById('subCatChart'), {
+            type: 'bar',
+            data: {
+                labels: subData.map(d => d.sub_category),
+                datasets: [{
+                    label: 'Sales ($)',
+                    data: subData.map(d => d.sales),
+                    backgroundColor: '#1b365d'
+                }]
+            },
+            options: { indexAxis: 'y', responsive: true }
+        });
+
+        // 6. Segment Chart
+        new Chart(document.getElementById('segChart'), {
+            type: 'pie',
+            data: {
+                labels: segData.map(d => d.segment),
+                datasets: [{
+                    data: segData.map(d => d.sales),
+                    backgroundColor: ['#1b365d', '#00a896', '#f5a623']
+                }]
+            },
+            options: { responsive: true }
+        });
+    </script>
+</body>
+</html>
